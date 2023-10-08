@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     };
 
 	const csrfToken = async () => {
-		await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+		await axios.get('https://coral-app-c7uu2.ondigitalocean.app/api/sanctum/csrf-cookie');
 		return true;
 	};
 

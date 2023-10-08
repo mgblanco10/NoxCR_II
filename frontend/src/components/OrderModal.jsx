@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createUserDetails } from '../services/apiOrders/ApiPostUserDetails'
+import { createUserDetails } from '../services/ApiPostUserDetails'
 
 function OrderModal({
   showModal,

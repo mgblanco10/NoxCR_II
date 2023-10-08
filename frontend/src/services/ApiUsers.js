@@ -5,21 +5,21 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL
 
-export const getUsers = () => {
+export const getUsers = (token) => {
   return axios
     .get(`${API_URL}/users`, {
-        withCredentials: true,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true, 
+    })
     .then((response) => response.data.users)
     .catch((error) => {
       console.error('Error fetching users:', error);
       return [];
     });
 };
+
 
 export const getUserDetails = () => {
     return axios
