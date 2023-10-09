@@ -25,7 +25,7 @@ class ProductController extends Controller
 {
     // public function __construct()
     // {
-    //     $this->middleware('checkUserRole', ['except' => ['index', 'search', 'show', 'editQuantity', 'addFavorite','removeFavorite','showFavorites', 'getPhoto', 'getColor', 'showColors']]);
+    //     $this->middleware('checkUserRole', ['except' => ['index', 'search', 'show', 'editQuantity', 'addFavorite','removeFavorite','showFavorites', 'getPhoto', 'getColor', 'showColors', 'deletePhoto']]);
     //       } 
 
     public function index()
@@ -60,7 +60,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'collection' => 'nullable',
             'colors' => 'nullable',
-            // 'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'detail' => 'required',
         ]);
 
@@ -109,6 +109,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
+        $user = Auth::user();
         try {
             $product = Product::findOrFail($id);
             return response()->json($product);
@@ -118,6 +119,7 @@ class ProductController extends Controller
     }
     public function edit($id): JsonResponse
     {
+        $user = Auth::user();
         try {
             $product = Product::findOrFail($id);
         
@@ -167,47 +169,21 @@ class ProductController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
             'detail' => 'required',
         ]);
-
-        // $imageUrls = [];
-
-        // if ($request->hasFile('images')) {
-        //     foreach ($request->file('images') as $imageFile) {
-        //         $uploadedFile = $imageFile->getRealPath();
-
-        //         $uploadApi = new UploadApi();
-
-        //         $cloudinaryUpload = $uploadApi->upload($uploadedFile);
-
-        //         $imagePath = $cloudinaryUpload['secure_url'];
-
-        //         $photo = Photo::create([
-        //             'url' => $imagePath, 
-        //             'product_id' => $product->id,
-        //         ]);
-
-        //         $imageUrls[] = $imagePath;
-        //     }
-        // }
-              // $selectedColorValues = json_decode($request->input('colors'));
-        // $colorIds = [];
-        // foreach ($selectedColorValues as $colorValue) {
-        //     $color = Color::firstOrCreate(['name' => $colorValue]);
-        //     $colorIds[] = $color->id;
-        // }
-
+        
         $selectedColorValues = json_decode($request->input('colors'));
         $colorIds = [];
         foreach ($selectedColorValues as $colorValue) {
             $color = Color::firstOrCreate(['name' => $colorValue]);
             $colorIds[] = $color->id;
         }
+
         $imageUrls = [];
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
                 $uploadedFile = $imageFile->getRealPath();
 
-                $uploadApi = new UploadApi();
+                $uploadApi = new UploadApi(); 
 
                 $cloudinaryUpload = $uploadApi->upload($uploadedFile);
 
@@ -229,11 +205,15 @@ class ProductController extends Controller
             'price' => $request->input('price'),
             'collection' => $request->input('collection'),
             'detail' => $request->input('detail'),
-        ]);
+        ]);        
 
         $product->colors()->sync($colorIds);
 
-        return response()->json(['success' => true, 'message' => '¡Producto actualizado exitosamente!', 'image_urls' => $imageUrls]);
+        return response()->json([
+            'success' => true,
+            'message' => '¡Producto actualizado exitosamente!',
+            'image_urls' => $imageUrls,
+        ]);
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
     }
@@ -267,8 +247,6 @@ public function deletePhoto($id): JsonResponse
         return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
     }
 }
-
-
     public function search(Request $request)
     {
         $searchTerm = $request->input('term');
