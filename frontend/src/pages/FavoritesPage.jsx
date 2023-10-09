@@ -78,7 +78,7 @@ const handleAddToCart = (e, product) => {
 const showCartNotification = () => {
   setCartNotification(
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-6 h-6">
-  <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+  <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
 </svg>
 
   );
@@ -134,12 +134,13 @@ const showCartNotification = () => {
 
   return (
     <div className="mx-8 md:mx-12">
-      <h2 className="text-left font-semibold text-3xl md:text-2xl 2xl:text-5xl mb-8 mt-12" style={{ color: "#3D3D3D" }} id="cuidados">Favoritos</h2>
+      <h2 className="text-left font-semibold text-3xl mb-8 mt-8" style={{ color: "#3D3D3D" }} id="cuidados">Favoritos</h2>
       {favorites.length === 0 ? (
         <p className="not-query">
-          "Aún sin Favoritos"
+          Aún sin los productos favoritos :(
         </p>
       ) : (
+        
         <div className="card">
           {favorites.length > 0 && (
             <div className="mx-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -8,3 +8,4 @@ export function TwLink({ as, children, ...rest }) {
         <Comp className="text-black-500 px-8 py-2 text-lg rounded-md text-sm font-semibold cursor-pointer hover:font-bold" {...rest}>{children}</Comp>
     )
 }
+

@@ -5,7 +5,6 @@ const AuthContent = createContext({
 	user: null,
 	setUser: () => {},
 	csrfToken: () => {},
-	// can: () => false,
     hasRole: () => false,
 });
 
