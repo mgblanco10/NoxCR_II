@@ -10,24 +10,41 @@ function Login() {
 	const [passwordError, setPasswordError] = React.useState('');
   const navigate = useNavigate();
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		const { email, password } = e.target.elements;
-		const body = {
-			email: email.value,
-			password: password.value,
-		};
-		await csrfToken();
-		try {
-			const resp = await axios.post('/login', body);
-			if (resp.status === 200) {
-				setUser(resp.data.user);
-				navigate('/');
-			}
-		} catch (error) {
-			if (error.response.status === 401) {
-				setError(error.response.data.message);
-			}
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await csrfToken();
+      } catch (error) {
+        console.error('Error al obtener la cookie CSRF:', error);
+      }
+    };
+
+    fetchData();
+  }, [csrfToken]);
+
+  
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+    const { email, password } = e.target.elements;
+    const body = {
+      email: email.value,
+      password: password.value,
+    };
+
+    try {
+      const resp = await axios.post('https://coral-app-c7uu2.ondigitalocean.app/api/login', body);
+      console.log("que viene por aca",resp.data)
+      if (resp.status === 200) {
+        console.log("genaro prueba", resp.data.token);
+        localStorage.setItem('authToken', resp.data.token);
+        setUser(resp.data.user);
+        navigate('/');
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        setError(error.response.data.message);
+      }
       if (error.response.data.errors.email) {
         setEmailError(error.response.data.errors.email[0]);
       } else {
@@ -38,9 +55,9 @@ function Login() {
       } else {
         setPasswordError('');
       }
-
-		}
-	};
+    }
+  };
+  
   return (
     <>
         <div className="flex items-start justify-center mb-8">

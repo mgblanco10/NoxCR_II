@@ -6,7 +6,7 @@ import Modal from '../components/ModalSuccess';
 import verification from "../assets/verification.svg"
 
 function Register() {
-  const { setUser } = useAuth();
+  const { setUser, csrfToken  } = useAuth();
 	const [nameError, setNameError] = React.useState('');
 	const [emailError, setEmailError] = React.useState('');
 	const [passwordError, setPasswordError] = React.useState('');
@@ -23,6 +23,18 @@ function Register() {
     navigate('/');
   };
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await csrfToken();
+      } catch (error) {
+        console.error('Error al obtener la cookie CSRF:', error);
+      }
+    };
+
+    fetchData();
+  }, [csrfToken]);
+
   const handleSubmit = async (e) => {
 		e.preventDefault();
 		const { name, email, password, cpassword} = e.target.elements;
@@ -35,11 +47,16 @@ function Register() {
 		}; 
     
 		try {
-			const resp = await axios.post('/register', body); 
-			if (resp.status === 200) {
+			const resp = await axios.post('https://coral-app-c7uu2.ondigitalocean.app/api/register', body); 
+      console.log("Respuesta completa:", resp);
+      console.log("Respuesta del servidor:", resp.data);
+      if (resp.status === 200) {
+        const responseData = resp.data;
+        const authToken = responseData.token; 
+        localStorage.setItem('authToken', authToken);
 				setUser(resp.data.user);
         openModal();
-			}
+      }
 		} catch (error) {
 			if (error.response.status === 422) {
 				console.log(error.response.data.errors);
@@ -62,8 +79,9 @@ function Register() {
 		}
 	};
 
+
   return (
-    <div className="flex items-center justify-center mt-24 md:mt-0">
+    <div className="flex items-center justify-center mb-8">
       <div className="bg-white px-10 py-6 border-2 border-gray-100">
         <h1 className="text-5xl font-semibold text-center" style={{ color: "#3C2046" }}>Crea tu cuenta</h1>
         <p className="font-medium text-lg text-gray-500 mt-2">

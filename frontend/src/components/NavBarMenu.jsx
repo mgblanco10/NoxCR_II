@@ -4,11 +4,13 @@ import whiteProfile from '../assets/whiteProfile.svg';
 import { TwLink } from './TwLink';
 import { useAuth } from '../contexts/AuthContext'; 
 import { logoutService } from '../services/ApiAuthService';
+import {useNavigate } from 'react-router-dom';
 
 function NavBarMenu() {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, setUser } = useAuth();
+  const navigate = useNavigate(); 
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -33,14 +35,18 @@ function NavBarMenu() {
   }, []);
 
   const handleLogout = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const { message } = await logoutService() 
+      const authToken = localStorage.getItem('authToken');
+      console.log('authToken:', authToken); 
+      const confirmationMessage = await logoutService(authToken);
       setUser(null);
+      console.log(confirmationMessage);
+      navigate('/');
     } catch (error) {
-      console.error(error);
+      console.error('Error en handleLogout:', error); 
     }
-	};
+  };
 
   return (
     <div className="relative inline-block text-left">
